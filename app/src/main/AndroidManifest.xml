@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.Emma.keyboard">
 
     <application
         android:allowBackup="true"
@@ -7,7 +8,6 @@
         android:label="EMMA KEYBOARD"
         android:supportsRtl="true">
 
-        <!-- Keyboard ka main service - Yahi sab se important hai -->
         <service
             android:name=".EmmaKeyboardService"
             android:label="EMMA KEYBOARD"
@@ -21,7 +21,6 @@
                 android:resource="@xml/method" />
         </service>
 
-        <!-- Settings open karne ke liye Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
