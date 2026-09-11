@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#10131a">
+  <meta name="description" content="Emma Keyboard - fast offline-first web keyboard simulator">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <title>𝐄𝐌𝐌𝐀 𝐊𝐄𝐘𝐁𝐎𝐀𝐑𝐃</title>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark">E</span><span>Emma Keyboard</span></div>
+      <button class="icon-btn" id="settingsBtn" aria-label="Settings">⚙</button>
+    </header>
+
+    <section class="editor-wrap">
+      <div class="editor-head">
+        <span>Typing area</span>
+        <span id="statusText">Ready</span>
+      </div>
+      <textarea id="editor" autocomplete="off" autocorrect="off" spellcheck="false"
+        placeholder="Tap the keyboard and start typing…"></textarea>
+    </section>
+
+    <section class="keyboard-shell" id="keyboardShell">
+      <div class="suggestions" id="suggestions" aria-label="Suggestions"></div>
+
+      <div class="utility-row">
+        <button class="tool-btn" data-panel="emoji">😀</button>
+        <button class="tool-btn" data-panel="clipboard">📋</button>
+        <button class="tool-btn" id="voiceBtn">🎤</button>
+        <button class="tool-btn" data-panel="translator">文</button>
+        <button class="tool-btn" data-action="punctuation">.,?!</button>
+      </div>
+
+      <div class="keys" id="keys"></div>
+
+      <div class="bottom-row">
+        <button class="wide-btn" data-panel="emoji" aria-label="Emoji">😀</button>
+        <button class="wide-btn" data-panel="clipboard" aria-label="Clipboard">📋</button>
+        <button class="wide-btn" id="micBottom" aria-label="Voice typing">🎤</button>
+        <button class="space-key" id="spaceKey">English</button>
+        <button class="wide-btn" id="enterKey" aria-label="Enter">↵</button>
+        <button class="wide-btn" id="backspaceKey" aria-label="Backspace">⌫</button>
+      </div>
+    </section>
+  </main>
+
+  <div class="overlay" id="overlay" hidden></div>
+
+  <aside class="panel" id="emojiPanel" hidden>
+    <div class="panel-head"><h2>Emoji</h2><button class="close-btn" data-close>×</button></div>
+    <div class="search-line"><input id="emojiSearch" placeholder="Search emoji" inputmode="search"></div>
+    <div class="category-strip" id="emojiCategories"></div>
+    <div class="emoji-grid" id="emojiGrid"></div>
+  </aside>
+
+  <aside class="panel" id="clipboardPanel" hidden>
+    <div class="panel-head"><h2>Clipboard</h2><button class="close-btn" data-close>×</button></div>
+    <div class="search-line"><input id="clipSearch" placeholder="Search copied text"></div>
+    <div class="panel-actions">
+      <button id="clearClipboard">Clear history</button>
+    </div>
+    <div id="clipboardList" class="list"></div>
+  </aside>
+
+  <aside class="panel" id="translatorPanel" hidden>
+    <div class="panel-head"><h2>Translator</h2><button class="close-btn" data-close>×</button></div>
+    <div class="translator-grid">
+      <label>From<select id="fromLang"><option>English</option><option>Urdu</option><option>Hindi</option><option>Arabic</option><option>Spanish</option><option>French</option><option>German</option><option>Turkish</option><option>Chinese</option></select></label>
+      <label>To<select id="toLang"><option>Urdu</option><option>English</option><option>Hindi</option><option>Arabic</option><option>Spanish</option><option>French</option><option>German</option><option>Turkish</option><option>Chinese</option></select></label>
+    </div>
+    <textarea id="translateInput" placeholder="Enter text"></textarea>
+    <button class="primary" id="translateBtn">Translate</button>
+    <div id="translationResult" class="translation-result">Offline demo translation is limited. Connect a real provider through the API hook in script.js for full translation.</div>
+    <button id="insertTranslation">Insert Translation</button>
+  </aside>
+
+  <aside class="panel settings-panel" id="settingsPanel" hidden>
+    <div class="panel-head"><h2>Settings</h2><button class="close-btn" data-close>×</button></div>
+    <div class="settings-list">
+      <h3>Typing</h3>
+      <label class="toggle"><span>Auto-correction</span><input type="checkbox" id="autoCorrect" checked><i></i></label>
+      <label class="toggle"><span>Next-word suggestions</span><input type="checkbox" id="suggestionsOn" checked><i></i></label>
+      <label class="toggle"><span>Learn new words</span><input type="checkbox" id="learnWords" checked><i></i></label>
+      <label class="toggle"><span>Auto-space</span><input type="checkbox" id="autoSpace" checked><i></i></label>
+      <label class="toggle"><span>Double-space period</span><input type="checkbox" id="doublePeriod" checked><i></i></label>
+      <label class="toggle"><span>Show number row</span><input type="checkbox" id="numberRow"><i></i></label>
+
+      <h3>Keyboard</h3>
+      <label>Keyboard size <select id="keyboardSize"><option value="small">Small</option><option value="medium" selected>Medium</option><option value="large">Large</option></select></label>
+      <label>Custom height <input id="heightRange" type="range" min="220" max="430" value="310"></label>
+      <label>Key spacing <input id="spacingRange" type="range" min="2" max="9" value="4"></label>
+      <label>Bottom padding <input id="paddingRange" type="range" min="2" max="18" value="8"></label>
+      <label class="toggle"><span>Rounded keys</span><input type="checkbox" id="roundedKeys" checked><i></i></label>
+      <label class="toggle"><span>Key borders</span><input type="checkbox" id="keyBorders" checked><i></i></label>
+
+      <h3>Language</h3>
+      <label>Keyboard language <select id="language"><option value="en">English</option><option value="ur">Urdu</option></select></label>
+
+      <h3>Sound & Haptic</h3>
+      <label class="toggle"><span>Key sound</span><input type="checkbox" id="keySound"><i></i></label>
+      <label>Sound volume <input id="soundVolume" type="range" min="0" max="1" step=".05" value=".35"></label>
+      <label class="toggle"><span>Vibration</span><input type="checkbox" id="vibration" checked><i></i></label>
+      <label class="toggle"><span>Press animation</span><input type="checkbox" id="pressAnimation" checked><i></i></label>
+
+      <h3>Appearance</h3>
+      <label>Theme <select id="theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label>
+
+      <h3>Privacy</h3>
+      <p class="privacy">Emma Keyboard does not send every keystroke to a server. Settings, learned words, personal dictionary, recent emoji and clipboard history stay in this browser. Password fields are never learned or autocorrected. Voice recognition depends on your browser and may use its speech service. Translation API requests, when configured, send only the text you translate.</p>
+      <button id="addWordBtn">Save current word</button>
+      <button id="dictionaryBtn">Personal Dictionary</button>
+      <button id="clearLearned">Clear Learned Words</button>
+      <button id="resetSettings">Reset Settings</button>
+    </div>
+  </aside>
+
+  <aside class="panel" id="dictionaryPanel" hidden>
+    <div class="panel-head"><h2>Personal Dictionary</h2><button class="close-btn" data-close>×</button></div>
+    <div class="search-line"><input id="dictSearch" placeholder="Search saved words"></div>
+    <div class="dictionary-add"><input id="newWord" placeholder="Add word"><button id="saveNewWord">Add</button></div>
+    <div id="dictionaryList" class="list"></div>
+  </aside>
+
+  <div class="toast" id="toast"></div>
+  <script src="script.js"></script>
+</body>
+</html>
